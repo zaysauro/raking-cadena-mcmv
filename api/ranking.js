@@ -4,7 +4,7 @@
  * Fonte: leads central, pastas e agendamentos; sem depender de funis individuais.
  * Segurança: nunca devolve token nem detalhes sensíveis ao cliente.
  */
-const BOARDS = { leads: 18428438591, pastas: 18431520161, agendamentos: 18431548138 };
+const BOARDS = { leads: 18428438591, pastas: 18431520161, agendamentos: 18431548138, tiagoFunil: 18435239634 };
 const COL = {
   leadOwner: 'color_mm5h9nnn', soldAt: 'date_mm57xz4a', proposedAt: 'date_mm57ge7a',
   leadStage: 'color_mm57z6j4', leadEntered: 'date_mm57ep37',
@@ -93,6 +93,25 @@ async function calculate(month) {
   const [people, leads] = await Promise.all([activePeople(), allItems(BOARDS.leads)]);
   const result = new Map(people.map((name) => [canonical(name), { name, vendas: 0, propostas: 0, pastas: 0, agendamentos: 0 }]));
   tally(leads, COL.leadOwner, COL.soldAt, month, result, 'vendas');
+  // Complementa vendas do funil do Tiago ausentes na coluna Data da venda central.
+  try {
+    const tiagoSales = await allItems(BOARDS.tiagoFunil);
+    const centrallySold = new Set(leads.filter(row =>
+      canonical(val(row, COL.leadOwner)) === 'tiagosilva' && ym(date(row, COL.soldAt)) === month
+    ).map(row => normalized(row.name)));
+    const seen = new Set();
+    for (const row of tiagoSales) {
+      if (val(row, 'color_mm7et8c').toLowerCase() !== 'vendido') continue;
+      const saleDate = date(row, 'date_mm57bnt7') || date(row, 'date_mm7e9f2b');
+      if (ym(saleDate) !== month) continue;
+      const customerKey = normalized(row.name);
+      if (!customerKey || seen.has(customerKey) || centrallySold.has(customerKey)) continue;
+      seen.add(customerKey);
+      if (result.has('tiagosilva')) result.get('tiagosilva').vendas++;
+    }
+  } catch (error) {
+    warnings.push('Funil de Tiago indisponível; vendas registradas apenas nele podem estar incompletas.');
+  }
   tally(leads, COL.leadOwner, COL.proposedAt, month, result, 'propostas');
   const optional = await Promise.allSettled([allItems(BOARDS.pastas), allItems(BOARDS.agendamentos)]);
   const complete = optional.every((x) => x.status === 'fulfilled');
