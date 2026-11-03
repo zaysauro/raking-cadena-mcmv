@@ -82,7 +82,7 @@ async function activePeople() {
   if (!rows.length) throw new Error('Time Alfa vazio; ranking não pode usar responsáveis externos');
   const active = rows.filter(row => {
     const status = normalized(val(row, 'status'));
-    return status === 'ativo' || status === 'emprocesso';
+    return canonical(row.name) !== 'cleyson' && (status === 'ativo' || status === 'emprocesso');
   });
   if (!active.length) throw new Error('Nenhum corretor elegível no Time Alfa');
   const people = new Map();
