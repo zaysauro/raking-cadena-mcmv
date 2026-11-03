@@ -4,7 +4,7 @@
  * Fonte: leads central, pastas e agendamentos; sem depender de funis individuais.
  * Segurança: nunca devolve token nem detalhes sensíveis ao cliente.
  */
-const BOARDS = { leads: 18428438591, pastas: 18431520161, agendamentos: 18431548138, tiagoFunil: 18435239634 };
+const BOARDS = { leads: 18428438591, pastas: 18431520161, agendamentos: 18431548138, equipe: 18431727501, tiagoFunil: 18435239634 };
 const COL = {
   leadOwner: 'color_mm5h9nnn', soldAt: 'date_mm57xz4a', proposedAt: 'date_mm57ge7a',
   leadStage: 'color_mm57z6j4', leadEntered: 'date_mm57ep37',
@@ -16,8 +16,19 @@ const TTL_MS = 60_000;
 let snapshot = null;
 let inflight = null;
 const normalized = (v) => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
-const aliases = new Map([['marcelo', 'marcelosilva'], ['cleyson', 'cleysonmendonca'], ['kauanpereira', 'pedrokauan'], ['pedrokauan', 'pedrokauan']]);
-function canonical(value) { const n = normalized(value); return aliases.get(n) || n; }
+function canonical(value) {
+  const n = normalized(value);
+  // Identidades do Time Alfa: nomes do cadastro nem sempre coincidem com
+  // os rótulos usados nas colunas dos quadros de produção.
+  if (n.includes('cleyson')) return 'cleyson';
+  if (n.includes('jhonattan')) return 'jhonattan';
+  if (n.includes('kauan')) return 'kauan';
+  if (n.includes('rodrigo') && n.includes('kopsch')) return 'rodrigo';
+  if (n.includes('tiago') && n.includes('silva')) return 'tiago';
+  if (n.includes('luizfernando') || n.includes('luisfernando')) return 'luiz';
+  if (n.includes('yang')) return 'yang';
+  return n;
+}
 function dateValue(value) {
   if (!value) return '';
   const m = String(value).match(/\d{4}-\d{2}-\d{2}/);
@@ -65,21 +76,23 @@ async function allItems(id) {
   return rows;
 }
 async function activePeople() {
-  const data = await gql('query($id:ID!){boards(ids:[$id]){columns{id title type settings_str}}}', { id: String(BOARDS.leads) });
-  const board = data?.boards?.[0];
-  if (!board) throw new Error('Não foi possível consultar os responsáveis do quadro principal');
-  const column = board.columns.find((x) => x.id === COL.leadOwner);
-  if (!column) throw new Error('Coluna de responsáveis indisponível');
-  const settings = JSON.parse(column.settings_str || '{}');
-  const rawLabels = settings.labels;
-  const labels = Array.isArray(rawLabels) ? rawLabels : Object.values(rawLabels || {});
-  // Monday pode não informar is_deactivated em todas as versões; nesse caso
-  // um status vazio não é considerado funcionário e as demais entradas permanecem.
-  const people = labels.filter((x) => typeof x === 'object' ? x.label && !x.is_deactivated : !!x)
-    .map((x) => typeof x === 'object' ? x.label : x).filter(Boolean);
-  if (!people.length) throw new Error('Nenhum responsável ativo identificado; não publicar ranking vazio');
-  return [...new Map(people.map((name) => [canonical(name), name])).values()];
+  // A fonte de autorização é o cadastro de corretores do Time Alfa,
+  // NUNCA o conjunto de rótulos de responsáveis do quadro central.
+  const rows = await allItems(BOARDS.equipe);
+  if (!rows.length) throw new Error('Time Alfa vazio; ranking não pode usar responsáveis externos');
+  const active = rows.filter(row => {
+    const status = normalized(val(row, 'status'));
+    return status === 'ativo' || status === 'emprocesso';
+  });
+  if (!active.length) throw new Error('Nenhum corretor elegível no Time Alfa');
+  const people = new Map();
+  for (const row of active) {
+    const id = canonical(row.name);
+    if (id && !people.has(id)) people.set(id, row.name);
+  }
+  return [...people.values()];
 }
+
 function tally(rows, field, dateField, month, out, property, predicate = () => true) {
   for (const row of rows) {
     if (ym(date(row, dateField)) !== month || !predicate(row)) continue;
