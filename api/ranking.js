@@ -19,8 +19,7 @@ const normalized = (v) => String(v || '').normalize('NFD').replace(/[\u0300-\u03
 function canonical(value) {
   const n = normalized(value);
   // Identidades do Time Alfa: nomes do cadastro nem sempre coincidem com
-  // os rótulos usados nas colunas dos quadros de produção.
-  if (n.includes('cleyson')) return 'cleyson';
+  // os rótulos usados nas colunas de produção. Cleyson permanece inelegível.
   if (n.includes('jhonattan')) return 'jhonattan';
   if (n.includes('kauan')) return 'kauan';
   if (n.includes('rodrigo') && n.includes('kopsch')) return 'rodrigo';
