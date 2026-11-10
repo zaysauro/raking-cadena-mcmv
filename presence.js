@@ -1,5 +1,7 @@
 /*
- * Painel de presença na TV do ranking: QR do Amparo + quem está na roleta hoje.
+ * Painel de presença na TV do ranking: QR do Amparo + fila da roleta do turno (ordem de chegada).
+ * Na troca de turno (08:30 e 17:30) a lista é zerada e aparece "Troca de turno, entre novamente com o QR Code"
+ * até o primeiro corretor ler o novo código.
  * O QR é do período (troca automática às 08:30 e às 17:30, definida no Amparo): o painel confere a cada
  * 30 s e logo após o horário de troca. Sem a chave configurada no servidor, o painel fica oculto e a TV
  * continua igual.
@@ -39,13 +41,28 @@
 
   function renderTeam(d) {
     var c = d.counts || {};
-    var total = (c.present || 0) + (c.paused || 0) + (c.checked_out || 0) + (c.absent || 0);
-    countEl.textContent = (c.present || 0) + ' de ' + total + ' na roleta' + (c.paused ? ' · ' + c.paused + ' em pausa' : '');
-    var rows = (d.team || []).filter(function (p) { return p.status !== 'absent'; }).slice(0, 12);
-    list.innerHTML = rows.length ? rows.map(function (p) {
-      var note = p.status === 'present' ? hhmm(p.checked_in_at) : p.status === 'paused' ? 'pausa' : 'saiu';
-      return '<li class="' + esc(p.status) + '"><i></i><span>' + esc(shortName(p.name)) + '</span><small>' + esc(note) + '</small></li>';
-    }).join('') : '<li class="empty">Ninguém registrou presença ainda</li>';
+    var reset = d.turn_reset === true;
+    panel.classList.toggle('is-turn-reset', reset);
+    countEl.textContent = reset ? 'Turno novo · ninguém na roleta' :
+      (c.present || 0) + ' na roleta' + (c.paused ? ' · ' + c.paused + ' em pausa' : '');
+    if (reset) {
+      list.innerHTML = '<li class="turn-reset" role="status"><strong>Troca de turno</strong>' +
+        '<span>entre novamente com o QR Code</span></li>';
+      return;
+    }
+    var rows = (d.team || []).filter(function (p) { return p.status === 'present' || p.status === 'paused'; }).slice(0, 12);
+    list.innerHTML = rows.map(function (p, i) {
+      var note = p.status === 'present' ? hhmm(p.checked_in_at) : 'pausa';
+      return '<li class="' + esc(p.status) + '"><b>' + (i + 1) + '</b><i></i><span>' + esc(shortName(p.name)) + '</span><small>' + esc(note) + '</small></li>';
+    }).join('');
+  }
+
+  // No horário da troca, zera a lista na hora (sem esperar a próxima consulta).
+  var resetTimer = null;
+  function armReset() {
+    if (resetTimer) clearTimeout(resetTimer);
+    var ms = expiresAt - Date.now();
+    if (ms > 0 && ms < 2147483647) resetTimer = setTimeout(function () { renderTeam({ turn_reset: true }); }, ms);
   }
 
   function render(d) {
@@ -61,6 +78,7 @@
     expiresAt = Date.parse(d.expires_at) || 0;
     qrBox.hidden = !img.getAttribute('src');
     until.textContent = expiresAt ? 'Código válido até ' + hhmm(d.expires_at) : '';
+    armReset();
     setMsg('');
   }
 

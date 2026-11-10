@@ -48,3 +48,12 @@ const upstream = (status, body) => { global.fetch = async (url, init) => { seen 
 
   console.log('presenca.test.js: ok');
 })().catch((e) => { console.error(e); process.exit(1); });
+
+// Roda depois dos cenários acima (mesmo global.fetch).
+setTimeout(async () => {
+  process.env.AMPARO_DISPLAY_KEY = 'amd_' + 'x'.repeat(43);
+  upstream(200, { ok: true, configured: true, rotate: false, team: [], counts: { present: 0 }, turn_reset: true, turn_start: '2026-11-10T11:30:00.000Z' });
+  const r = await call();
+  assert.equal(r.status, 200); assert.equal(r.value.turn_reset, true); assert.equal(r.value.turn_start, '2026-11-10T11:30:00.000Z');
+  console.log('ok - turn_reset repassado');
+}, 300);

@@ -23,6 +23,9 @@ function pick(d) {
     display_id: typeof d.display_id === 'string' && DISPLAY_ID.test(d.display_id) ? d.display_id : null,
     starts_at: isoOrNull(d.starts_at),
     expires_at: isoOrNull(d.expires_at),
+    // Troca de turno: ninguém leu o QR do turno atual ainda (Amparo zera a presença a cada troca).
+    turn_reset: d.turn_reset === true,
+    turn_start: isoOrNull(d.turn_start),
     // SVG gerado pelo próprio Amparo (biblioteca qrcode); sem <script>, a TV o exibe como imagem.
     qr_svg: svg.startsWith('<svg') && !/<script|on\w+=/i.test(svg) ? svg : null,
     counts: { present: count(counts.present), paused: count(counts.paused), checked_out: count(counts.checked_out), absent: count(counts.absent) },
