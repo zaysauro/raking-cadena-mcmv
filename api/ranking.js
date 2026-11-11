@@ -11,9 +11,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const month = String(req.query?.month || '');
     const endpoint = new URL('/functions/v1/tv-ranking', baseUrl);
-    if (/^\\d{4}-(0[1-9]|1[0-2])$/.test(month)) endpoint.searchParams.set('month', month);
     endpoint.searchParams.set('resource', 'ranking');
 
     const response = await fetch(endpoint, {
