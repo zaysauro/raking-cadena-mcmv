@@ -36,6 +36,10 @@ footer.foot{flex:0 0 auto;font-size:clamp(8px,.65vw,10px);line-height:1.1}
 @font-face{font-family:Outfit;font-weight:600;font-display:swap;src:url(/fonts/outfit-latin-600-normal.woff2) format('woff2')}
 @font-face{font-family:Outfit;font-weight:700;font-display:swap;src:url(/fonts/outfit-latin-700-normal.woff2) format('woff2')}
 @font-face{font-family:Outfit;font-weight:800;font-display:swap;src:url(/fonts/outfit-latin-800-normal.woff2) format('woff2')}
+@font-face{font-family:Montserrat;font-weight:400;font-display:swap;src:url(/fonts/montserrat-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:Montserrat;font-weight:600;font-display:swap;src:url(/fonts/montserrat-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:Montserrat;font-weight:700;font-display:swap;src:url(/fonts/montserrat-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:Montserrat;font-weight:800;font-display:swap;src:url(/fonts/montserrat-latin-800-normal.woff2) format('woff2')}
 :root{--a-green:#435837;--a-g800:#28371F;--a-g900:#1E2A18;--a-orange:#DE673D;--a-o600:#C4532C;--a-o200:#F6C9B3;--a-cream:#F4ECE1;--a-c200:#E9DCCB;--a-ink:#1F2A19;--a-gold:#EDB548}
 html,body{font-family:Outfit,Arial,sans-serif}
 body{color:var(--a-ink);background:radial-gradient(120% 90% at 85% 110%,#4c6340 0%,transparent 55%),radial-gradient(90% 70% at 0% -10%,#3a4e30 0%,transparent 60%),var(--a-g800) fixed}
@@ -49,30 +53,31 @@ main{position:relative;z-index:1}
 h1,h2,#okrs h1,#okrs h2{font-family:Fredoka,Outfit,sans-serif;font-weight:700;color:var(--a-cream);text-shadow:none;letter-spacing:.01em}
 h2{color:var(--a-o200)}
 /* Pódio em arcos (o símbolo da Amparo) */
-.card{--medal:var(--a-orange);--light:#4358371a;--line:#43583726;background:var(--a-cream);color:var(--a-ink);border-top:0;border-radius:50% 50% 18px 18px/clamp(70px,9vh,120px) clamp(70px,9vh,120px) 18px 18px;box-shadow:0 14px 34px #0000004d;outline:4px solid #ffffff10;outline-offset:7px}
-.card.first{--medal:var(--a-gold);--light:#ffffff26;--line:#ffffff33;background:linear-gradient(180deg,#E57449,var(--a-orange) 45%,var(--a-o600));color:var(--a-cream);outline-color:#DE673D40}
-.card.second{--medal:var(--a-orange)}
-.card.third{--medal:var(--a-green)}
+.card{--medal:var(--a-orange);--light:#43583712;--line:#4358371f;background:linear-gradient(180deg,#F7F1E8 0%,#F1E8DB 55%,#EADFCF 100%);color:var(--a-ink);border-top:0;border-radius:50% 50% 18px 18px/clamp(70px,9vh,120px) clamp(70px,9vh,120px) 18px 18px;box-shadow:inset 0 1px 0 #ffffffa6,0 18px 42px #0000003d,0 3px 10px #0000001f}
+.card.first{--medal:var(--a-gold);--light:#ffffff21;--line:#ffffff2e;background:linear-gradient(180deg,#E3764E 0%,#DA6A41 50%,#C9582F 100%);color:var(--a-cream);box-shadow:inset 0 1px 0 #ffffff40,0 20px 46px #00000047,0 3px 10px #00000026}
+.card.second{--medal:var(--a-orange);--light:#43583712;--line:#4358371f}
+.card.third{--medal:var(--a-green);--light:#43583712;--line:#4358371f}
 .place{font-family:Fredoka,Outfit,sans-serif;font-weight:700;letter-spacing:.12em;color:var(--a-orange)}
 .card.first .place{color:var(--a-cream)}
 .avatar{background:var(--a-c200);color:var(--a-green);font-family:Fredoka,Outfit,sans-serif;border-width:5px;box-shadow:0 5px 14px #0000002e}
 .name{font-family:Fredoka,Outfit,sans-serif;font-weight:600;color:var(--a-ink)}
 .card.first .name{color:var(--a-cream)}
 .metric{background:var(--light);border:1px solid var(--line);border-radius:12px;box-shadow:none}
+.metric span{color:#4b5843}.card.first .metric span{color:#FFF3E9}
 .metric strong{font-family:Fredoka,Outfit,sans-serif;font-weight:700;color:var(--a-green)}
 .metric:first-child strong{color:var(--a-orange)}
 .card.first .metric strong,.card.first .metric:first-child strong{color:var(--a-cream)}
 .metric span{text-transform:uppercase;letter-spacing:.04em;opacity:.8}
 /* Desafios da semana */
-.challenge{background:var(--a-cream);border-top:5px solid var(--a-orange);box-shadow:0 10px 24px #0000004d;border-radius:14px;color:var(--a-ink)}
+.challenge{background:linear-gradient(180deg,#F7F1E8 0%,#EFE6D8 100%);border-top:4px solid var(--a-orange);box-shadow:inset 0 1px 0 #ffffff99,0 12px 28px #00000038,0 2px 8px #0000001a;border-radius:14px;color:var(--a-ink)}
 .challenge .initial{background:var(--a-c200);color:var(--a-green);border-color:var(--a-o200)}
 .challenge .person{font-family:Fredoka,Outfit,sans-serif;font-weight:600}
 .challenge .level{color:var(--a-orange);letter-spacing:.06em}
 .missiontop b{color:var(--a-orange)}
-.segment{background:var(--a-c200)}
+.segment{background:#E3D7C5}
 .missionnote{color:#5f6b56}
 .reward{border-top-color:var(--a-c200);color:var(--a-orange)}
-.total{background:var(--a-cream);box-shadow:0 9px 22px #0000004d;border-radius:14px}
+.total{background:linear-gradient(180deg,#F7F1E8 0%,#EFE6D8 100%);box-shadow:inset 0 1px 0 #ffffff99,0 10px 24px #00000038;border-radius:14px}
 .total strong{font-family:Fredoka,Outfit,sans-serif;font-weight:700;color:var(--a-orange)}
 .total span{color:var(--a-green);text-transform:uppercase;letter-spacing:.08em}
 /* Rodapé, avisos, barra de troca de tela */
@@ -81,10 +86,10 @@ h2{color:var(--a-o200)}
 .progress{background:#F4ECE11f}
 .progress>i{background:var(--a-orange)}
 /* Painel de presença */
-.presence{background:var(--a-cream);border-top-color:var(--a-orange);box-shadow:0 12px 29px #0000004d;color:var(--a-ink)}
+.presence{font-family:Montserrat,Arial,sans-serif;background:linear-gradient(180deg,#F7F1E8 0%,#EFE6D8 100%);border-top-color:var(--a-orange);box-shadow:inset 0 1px 0 #ffffff99,0 12px 29px #0000003d;color:var(--a-ink)}
 .presence .kicker{color:var(--a-orange)}
-.presence h3{font-family:Fredoka,Outfit,sans-serif;font-weight:600;color:var(--a-green)}
-.presence .qr{border-color:var(--a-c200)}
+.presence h3{color:var(--a-green)}
+.presence .qr{border-color:#E3D7C5}
 .presence .hint{color:#5f6b56}
 .presence .until{color:var(--a-ink)}
 .presence .count{color:var(--a-orange);border-top-color:var(--a-c200)}
