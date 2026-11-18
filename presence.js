@@ -32,7 +32,14 @@
     try { return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' }); }
     catch (e) { return ''; }
   }
-  function shortName(name) { return String(name || '').trim().split(/\s+/).slice(0, 2).join(' '); }
+  // Mesmo nome das fotos (photos/Nome_Sobrenome.jpg) para o corretor reconhecido; senão, os dois primeiros nomes.
+  var ROSTER = [['cesar', 'Cesar Augusto'], ['jhonattan', 'Jhonattan Paes'], ['kauan', 'Kauan Pereira'], ['luiz', 'Luiz Fernando'],
+    ['luis', 'Luiz Fernando'], ['rodrigo', 'Rodrigo Kopsch'], ['tiago', 'Tiago Silva'], ['yang', 'Yang Souza']];
+  function shortName(name) {
+    var t = String(name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/);
+    for (var i = 0; i < ROSTER.length; i++) if (t.indexOf(ROSTER[i][0]) !== -1) return ROSTER[i][1];
+    return String(name || '').trim().split(/\s+/).slice(0, 2).join(' ');
+  }
   function setVisible(on) {
     panel.hidden = !on;
     document.body.classList.toggle('has-presence', on);
