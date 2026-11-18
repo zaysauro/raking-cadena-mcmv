@@ -1,4 +1,4 @@
-# Ranking MCMV TV — Cadena
+# Ranking MCMV TV — Amparo Imobiliária
 
 Tela de ranking MCMV (Vercel). Configure `MONDAY_API_TOKEN` em Vercel > Project Settings > Environment Variables.
 
